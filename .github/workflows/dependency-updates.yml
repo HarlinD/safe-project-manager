@@ -1,0 +1,60 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.18.1'
+        cache: 'npm'
+        
+    - name: Update frontend dependencies
+      working-directory: ./frontend
+      run: |
+        npm update
+        npm audit fix --audit-level=moderate
+        
+    - name: Update backend dependencies
+      working-directory: ./backend
+      run: |
+        npm update
+        npm audit fix --audit-level=moderate
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update dependencies'
+        title: 'chore: update dependencies'
+        body: |
+          ## Dependency Updates
+          
+          This PR updates dependencies for both frontend and backend applications.
+          
+          ### Changes:
+          - Updated frontend dependencies
+          - Updated backend dependencies
+          - Applied security fixes where possible
+          
+          ### Testing:
+          - [ ] Frontend tests pass
+          - [ ] Backend tests pass
+          - [ ] Security scans pass
+          
+          Please review and merge if everything looks good.
+        branch: dependency-updates
+        delete-branch: true

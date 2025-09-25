@@ -1,0 +1,229 @@
+name: Database Migrations
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/database/migrations/**'
+      - 'backend/database/seeds/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run migrations'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  NODE_VERSION: '20.18.1'
+
+jobs:
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: safe_pm_migration_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Validate migration files
+      working-directory: ./backend
+      run: |
+        # Check if migration files are valid JavaScript
+        for file in database/migrations/*.js; do
+          echo "Validating $file"
+          node -c "$file" || exit 1
+        done
+        
+        # Check if seed files are valid JavaScript
+        for file in database/seeds/*.js; do
+          echo "Validating $file"
+          node -c "$file" || exit 1
+        done
+        
+    - name: Test migrations
+      working-directory: ./backend
+      run: |
+        # Run migrations
+        npx knex migrate:latest
+        echo "✅ Migrations applied successfully"
+        
+        # Rollback migrations
+        npx knex migrate:rollback --all
+        echo "✅ Migrations rolled back successfully"
+        
+        # Run migrations again
+        npx knex migrate:latest
+        echo "✅ Migrations re-applied successfully"
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: safe_pm_migration_test
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        
+    - name: Test seeds
+      working-directory: ./backend
+      run: |
+        # Run seeds
+        npx knex seed:run
+        echo "✅ Seeds applied successfully"
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: safe_pm_migration_test
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+
+  deploy-migrations-staging:
+    name: Deploy Migrations to Staging
+    runs-on: ubuntu-latest
+    needs: validate-migrations
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Run migrations on staging
+      working-directory: ./backend
+      run: |
+        echo "Running migrations on staging environment..."
+        npx knex migrate:latest --env staging
+        echo "✅ Staging migrations completed"
+      env:
+        NODE_ENV: staging
+        DB_HOST: ${{ secrets.STAGING_DB_HOST }}
+        DB_PORT: ${{ secrets.STAGING_DB_PORT }}
+        DB_NAME: ${{ secrets.STAGING_DB_NAME }}
+        DB_USER: ${{ secrets.STAGING_DB_USER }}
+        DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+        
+    - name: Run seeds on staging
+      working-directory: ./backend
+      run: |
+        echo "Running seeds on staging environment..."
+        npx knex seed:run --env staging
+        echo "✅ Staging seeds completed"
+      env:
+        NODE_ENV: staging
+        DB_HOST: ${{ secrets.STAGING_DB_HOST }}
+        DB_PORT: ${{ secrets.STAGING_DB_PORT }}
+        DB_NAME: ${{ secrets.STAGING_DB_NAME }}
+        DB_USER: ${{ secrets.STAGING_DB_USER }}
+        DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+
+  deploy-migrations-production:
+    name: Deploy Migrations to Production
+    runs-on: ubuntu-latest
+    needs: validate-migrations
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Run migrations on production
+      working-directory: ./backend
+      run: |
+        echo "Running migrations on production environment..."
+        npx knex migrate:latest --env production
+        echo "✅ Production migrations completed"
+      env:
+        NODE_ENV: production
+        DB_HOST: ${{ secrets.PRODUCTION_DB_HOST }}
+        DB_PORT: ${{ secrets.PRODUCTION_DB_PORT }}
+        DB_NAME: ${{ secrets.PRODUCTION_DB_NAME }}
+        DB_USER: ${{ secrets.PRODUCTION_DB_USER }}
+        DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+        
+    - name: Run seeds on production
+      working-directory: ./backend
+      run: |
+        echo "Running seeds on production environment..."
+        npx knex seed:run --env production
+        echo "✅ Production seeds completed"
+      env:
+        NODE_ENV: production
+        DB_HOST: ${{ secrets.PRODUCTION_DB_HOST }}
+        DB_PORT: ${{ secrets.PRODUCTION_DB_PORT }}
+        DB_NAME: ${{ secrets.PRODUCTION_DB_NAME }}
+        DB_USER: ${{ secrets.PRODUCTION_DB_USER }}
+        DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+
+  notify-migration-status:
+    name: Notify Migration Status
+    runs-on: ubuntu-latest
+    needs: [deploy-migrations-staging, deploy-migrations-production]
+    if: always()
+    
+    steps:
+    - name: Notify Slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#safe-project-manager'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        text: |
+          🗄️ Database Migration Status
+          
+          Staging: ${{ needs.deploy-migrations-staging.result }}
+          Production: ${{ needs.deploy-migrations-production.result }}
+          
+          Environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

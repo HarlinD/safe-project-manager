@@ -8,7 +8,7 @@ const router = express.Router();
 // Dashboard metrics endpoint
 router.get('/metrics', async (req: Request, res: Response) => {
   try {
-    const organizationId = req.query.organizationId as string || 'default-org';
+    const organizationId = req.query.organizationId as string || '550e8400-e29b-41d4-a716-446655440020';
     
     // Try to get from cache first
     let metrics = await cacheService.getDashboardMetrics(organizationId);

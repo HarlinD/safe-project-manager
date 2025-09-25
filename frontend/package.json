@@ -1,0 +1,61 @@
+{
+  "name": "safe-project-manager-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "lucide-react": "^0.263.1",
+    "tailwindcss": "^3.2.7",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "axios": "^1.3.4",
+    "socket.io-client": "^4.6.1",
+    "recharts": "^2.5.0",
+    "react-hook-form": "^7.43.5",
+    "react-query": "^3.39.3",
+    "date-fns": "^2.29.3",
+    "clsx": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/react-beautiful-dnd": "^13.1.4",
+    "typescript": "^4.9.5",
+    "react-scripts": "5.0.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "eslint": "^8.35.0",
+    "prettier": "^2.8.4",
+    "cypress": "^12.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write src/**/*.{ts,tsx,css}",
+    "format:check": "prettier --check src/**/*.{ts,tsx,css}",
+    "type-check": "tsc --noEmit",
+    "test:coverage": "npm test -- --coverage --watchAll=false",
+    "test:e2e": "cypress run"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

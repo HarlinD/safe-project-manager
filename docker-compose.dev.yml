@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  frontend-dev:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3015:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:3016
+      - REACT_APP_WS_URL=ws://localhost:3016
+    depends_on:
+      - backend-dev
+    networks:
+      - safe-dev-network
+
+  backend-dev:
+    image: node:20.18.1-alpine
+    working_dir: /app
+    ports:
+      - "3016:3016"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://safe_user:safe_password@db-dev:5448/safe_pm_dev
+      - REDIS_URL=redis://redis-dev:6381
+      - FRONTEND_URL=http://localhost:3015
+    depends_on:
+      - db-dev
+      - redis-dev
+    networks:
+      - safe-dev-network
+
+  db-dev:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=safe_pm_dev
+      - POSTGRES_USER=safe_user
+      - POSTGRES_PASSWORD=safe_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5448:5432"
+    networks:
+      - safe-dev-network
+
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - safe-dev-network
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+
+networks:
+  safe-dev-network:
+    driver: bridge

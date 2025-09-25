@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3015:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:3016
+      - REACT_APP_WS_URL=ws://backend:3016
+    depends_on:
+      - backend
+    networks:
+      - safe-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "3016:3016"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://safe_user:safe_password@db:5447/safe_pm
+      - REDIS_URL=redis://redis:6380
+      - JWT_SECRET=your-jwt-secret-here
+      - FRONTEND_URL=http://localhost:3015
+    depends_on:
+      - db
+      - redis
+    networks:
+      - safe-network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=safe_pm
+      - POSTGRES_USER=safe_user
+      - POSTGRES_PASSWORD=safe_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5447:5432"
+    networks:
+      - safe-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - safe-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  safe-network:
+    driver: bridge

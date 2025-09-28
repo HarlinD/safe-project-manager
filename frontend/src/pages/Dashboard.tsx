@@ -234,30 +234,59 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Enhanced Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {metrics.map((metric) => (
-          <div key={metric.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-2">
-              <metric.icon className={`h-6 w-6 ${getMetricColor(metric.color)}`} />
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                metric.trend === 'up' ? 'bg-green-100 text-green-800' : 
-                metric.trend === 'down' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+          <div key={metric.id} className="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-lg ${
+                metric.color === 'blue' ? 'bg-blue-50' :
+                metric.color === 'green' ? 'bg-green-50' :
+                metric.color === 'red' ? 'bg-red-50' :
+                metric.color === 'purple' ? 'bg-purple-50' :
+                metric.color === 'orange' ? 'bg-orange-50' :
+                metric.color === 'teal' ? 'bg-teal-50' : 'bg-gray-50'
               }`}>
-                {metric.trend === 'up' ? '↗' : metric.trend === 'down' ? '↘' : '→'}
-              </span>
+                <metric.icon className={`h-6 w-6 ${
+                  metric.color === 'blue' ? 'text-blue-600' :
+                  metric.color === 'green' ? 'text-green-600' :
+                  metric.color === 'red' ? 'text-red-600' :
+                  metric.color === 'purple' ? 'text-purple-600' :
+                  metric.color === 'orange' ? 'text-orange-600' :
+                  metric.color === 'teal' ? 'text-teal-600' : 'text-gray-600'
+                }`} />
+              </div>
+              <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                metric.trend === 'up' ? 'bg-green-100 text-green-700' : 
+                metric.trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+              }`}>
+                <span className="mr-1">
+                  {metric.trend === 'up' ? '↗' : metric.trend === 'down' ? '↘' : '→'}
+                </span>
+                {metric.trend === 'up' ? 'Up' : metric.trend === 'down' ? 'Down' : 'Stable'}
+              </div>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-600 mb-1">{metric.title}</p>
-              <p className="text-2xl font-bold text-gray-900 mb-1">{metric.value}</p>
-              <p className={`text-xs ${
-                metric.trend === 'up' ? 'text-green-600' : 
-                metric.trend === 'down' ? 'text-red-600' : 'text-gray-600'
-              }`}>
-                {metric.change}
-              </p>
-              {metric.description && (
-                <p className="text-xs text-gray-500 mt-1">{metric.description}</p>
-              )}
+              <p className="text-sm font-medium text-gray-600 mb-2">{metric.title}</p>
+              <p className="text-3xl font-bold text-gray-900 mb-2">{metric.value}</p>
+              <div className="flex items-center justify-between">
+                <p className={`text-sm font-medium ${
+                  metric.trend === 'up' ? 'text-green-600' : 
+                  metric.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+                }`}>
+                  {metric.change}
+                </p>
+                {metric.description && (
+                  <div className="group-hover:opacity-100 opacity-0 transition-opacity duration-300">
+                    <div className="relative">
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-10">
+                        {metric.description}
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                      <div className="w-4 h-4 rounded-full bg-gray-300 hover:bg-gray-400 cursor-help"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -266,117 +295,224 @@ const Dashboard: React.FC = () => {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Velocity Trend Chart */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Velocity Trend</h2>
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Last 6 sprints</span>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Velocity Trend</h2>
+                <p className="text-sm text-gray-600 mt-1">Story points delivered per sprint</p>
+              </div>
+              <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
+                <Clock className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">Last 6 sprints</span>
               </div>
             </div>
           </div>
           <div className="p-6">
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={data?.charts.velocity || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                />
+                <YAxis 
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                />
+                <Tooltip 
+                  formatter={(value: any) => [`${value} SP`, 'Velocity']}
+                  labelStyle={{ color: '#374151' }}
+                  contentStyle={{ 
+                    backgroundColor: '#f9fafb', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                />
                 <Line 
                   type="monotone" 
                   dataKey="velocity" 
                   stroke="#0066CC" 
                   strokeWidth={3}
                   dot={{ fill: '#0066CC', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, stroke: '#0066CC', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <span>Average: {data?.charts.velocity ? 
+                Math.round(data.charts.velocity.reduce((sum, sprint) => sum + (sprint.velocity || 0), 0) / data.charts.velocity.length) 
+                : 0} SP
+              </span>
+              <span>Trend: {data?.charts.velocity && data.charts.velocity.length > 1 ? 
+                ((data.charts.velocity[data.charts.velocity.length - 1].velocity || 0) > (data.charts.velocity[0].velocity || 0) ? '↗ Increasing' : '↘ Decreasing')
+                : '→ Stable'
+              }</span>
+            </div>
           </div>
         </div>
 
         {/* Team Health Chart */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Team Health Score</h2>
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">By Release Train</span>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Team Health Score</h2>
+                <p className="text-sm text-gray-600 mt-1">Health metrics by Release Train</p>
+              </div>
+              <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
+                <Users className="h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Avg: {data?.charts.teamHealth ? 
+                    (data.charts.teamHealth.reduce((sum, team) => sum + (team.health || 0), 0) / data.charts.teamHealth.length).toFixed(1) 
+                    : '0'}/10
+                </span>
               </div>
             </div>
           </div>
           <div className="p-6">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data?.charts.teamHealth || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis domain={[0, 10]} />
-                <Tooltip />
-                <Bar dataKey="health" fill="#10B981" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                />
+                <YAxis 
+                  domain={[0, 10]} 
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                />
+                <Tooltip 
+                  formatter={(value: any) => [`${value}/10`, 'Health Score']}
+                  labelStyle={{ color: '#374151' }}
+                  contentStyle={{ 
+                    backgroundColor: '#f9fafb', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar 
+                  dataKey="health" 
+                  fill="#10B981"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              {(data?.charts.teamHealth || []).map((team, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium text-gray-900">{team.name}</span>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      (team.health || 0) >= 8 ? 'bg-green-500' :
+                      (team.health || 0) >= 6 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}></div>
+                    <span className="font-bold text-gray-900">{team.health || 0}/10</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Release Train Overview */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Release Train Overview</h2>
-            <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-500">Filter by status</span>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Release Train Overview</h2>
+              <p className="text-sm text-gray-600 mt-1">Monitor progress and health across all release trains</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-600">Filter by status</span>
+              </div>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                View All
+              </button>
             </div>
           </div>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {(data?.releaseTrains || []).map((train) => (
-              <div key={train.id} className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${getStatusColor(train.status)}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium text-gray-900">{train.name}</h3>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(train.status)}`}>
-                    {train.status.replace('-', ' ')}
+              <div key={train.id} className={`group border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 ${
+                train.status === 'on-track' ? 'border-green-200 bg-green-50/30' :
+                train.status === 'at-risk' ? 'border-yellow-200 bg-yellow-50/30' :
+                train.status === 'delayed' ? 'border-red-200 bg-red-50/30' :
+                'border-blue-200 bg-blue-50/30'
+              }`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      train.status === 'on-track' ? 'bg-green-500' :
+                      train.status === 'at-risk' ? 'bg-yellow-500' :
+                      train.status === 'delayed' ? 'bg-red-500' :
+                      'bg-blue-500'
+                    }`}></div>
+                    <h3 className="font-semibold text-gray-900">{train.name}</h3>
+                  </div>
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                    train.status === 'on-track' ? 'bg-green-100 text-green-800' :
+                    train.status === 'at-risk' ? 'bg-yellow-100 text-yellow-800' :
+                    train.status === 'delayed' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {train.status.replace('-', ' ').toUpperCase()}
                   </span>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
                       <span>Progress</span>
                       <span>{train.progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        className={`h-3 rounded-full transition-all duration-500 ${
+                          train.progress >= 80 ? 'bg-green-500' :
+                          train.progress >= 60 ? 'bg-blue-500' :
+                          train.progress >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
                         style={{ width: `${train.progress}%` }}
                       ></div>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-500">Velocity:</span>
-                      <span className="font-medium ml-1">{train.velocity} SP</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                      <div className="text-lg font-bold text-gray-900">{train.velocity}</div>
+                      <div className="text-xs text-gray-500">Velocity (SP)</div>
                     </div>
-                    <div>
-                      <span className="text-gray-500">Teams:</span>
-                      <span className="font-medium ml-1">{train.teamCount}</span>
+                    <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                      <div className="text-lg font-bold text-gray-900">{train.teamCount}</div>
+                      <div className="text-xs text-gray-500">Teams</div>
                     </div>
                   </div>
                   
-                  <div className="pt-2 border-t border-gray-200">
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>Budget: ${(train.budget / 1000).toFixed(0)}k</span>
-                      <span>Spent: ${(train.spent / 1000).toFixed(0)}k</span>
+                  <div className="pt-3 border-t border-gray-200">
+                    <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                      <span>Budget Utilization</span>
+                      <span>{Math.round((train.spent / train.budget) * 100)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div 
-                        className="bg-green-500 h-1 rounded-full" 
+                        className={`h-2 rounded-full transition-all duration-500 ${
+                          (train.spent / train.budget) < 0.8 ? 'bg-green-500' :
+                          (train.spent / train.budget) < 0.95 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
                         style={{ width: `${(train.spent / train.budget) * 100}%` }}
                       ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>${(train.budget / 1000).toFixed(0)}k budget</span>
+                      <span>${(train.spent / 1000).toFixed(0)}k spent</span>
                     </div>
                   </div>
                 </div>
@@ -389,68 +525,110 @@ const Dashboard: React.FC = () => {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Risk Distribution */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Risk Distribution</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Risk Distribution</h2>
+                <p className="text-sm text-gray-600 mt-1">Monitor risk levels across projects</p>
+              </div>
+              <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  {(data?.charts.riskDistribution || []).reduce((sum, item) => sum + item.value, 0)} Total
+                </span>
+              </div>
+            </div>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={data?.charts.riskDistribution || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {(data?.charts.riskDistribution || []).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {(data?.charts.riskDistribution || []).map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
-                    <span>{item.name}</span>
+            <div className="flex items-center justify-center mb-6">
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={data?.charts.riskDistribution || []}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {(data?.charts.riskDistribution || []).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: any) => [`${value} risks`, 'Count']}
+                    labelStyle={{ color: '#374151' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-3">
+              {(data?.charts.riskDistribution || []).map((item, index) => {
+                const total = (data?.charts.riskDistribution || []).reduce((sum, risk) => sum + risk.value, 0);
+                const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                return (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
+                      <span className="font-medium text-gray-900">{item.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm text-gray-500">{percentage}%</span>
+                      <span className="font-bold text-gray-900">{item.value}</span>
+                    </div>
                   </div>
-                  <span className="font-medium">{item.value}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Recent Activity & Alerts</h2>
-              <button className="text-sm text-blue-600 hover:text-blue-800">View all</button>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Recent Activity & Alerts</h2>
+                <p className="text-sm text-gray-600 mt-1">Latest updates and notifications</p>
+              </div>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                View All
+              </button>
             </div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               {(data?.activities || []).map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="text-lg">{getActivityIcon(activity.type)}</div>
+                <div key={activity.id} className="group flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-gray-100 hover:border-gray-200">
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                    activity.type === 'success' ? 'bg-green-100 text-green-600' :
+                    activity.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
+                    activity.type === 'error' ? 'bg-red-100 text-red-600' :
+                    'bg-blue-100 text-blue-600'
+                  }`}>
+                    {getActivityIcon(activity.type)}
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                      <span className="text-xs text-gray-500">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {activity.title}
+                      </p>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                         {new Date(activity.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
-                    <div className="flex items-center mt-2 space-x-2">
-                      <span className="text-xs text-gray-500">by {activity.user}</span>
+                    <p className="text-sm text-gray-600 mb-3">{activity.description}</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                          <Users className="h-3 w-3 text-gray-500" />
+                        </div>
+                        <span className="text-xs text-gray-500">{activity.user}</span>
+                      </div>
                       {activity.releaseTrain && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           {activity.releaseTrain}
                         </span>
                       )}
@@ -459,6 +637,13 @@ const Dashboard: React.FC = () => {
                 </div>
               ))}
             </div>
+            {(data?.activities || []).length === 0 && (
+              <div className="text-center py-12">
+                <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No recent activity</p>
+                <p className="text-sm text-gray-400 mt-1">Activity will appear here as teams work</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

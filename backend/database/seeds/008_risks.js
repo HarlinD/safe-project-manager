@@ -4,7 +4,7 @@ exports.seed = function(knex) {
     .then(function () {
       return knex('risks').insert([
         {
-          id: '550e8400-e29b-41d4-a716-446655440060',
+          id: '550e8400-e29b-41d4-a716-446655440070',
           organization_id: '550e8400-e29b-41d4-a716-446655440020',
           release_train_id: '550e8400-e29b-41d4-a716-446655440030',
           title: 'Teknisk skuld i legacy-kod',
@@ -20,7 +20,7 @@ exports.seed = function(knex) {
           created_by: '550e8400-e29b-41d4-a716-446655440010'
         },
         {
-          id: '550e8400-e29b-41d4-a716-446655440061',
+          id: '550e8400-e29b-41d4-a716-446655440071',
           organization_id: '550e8400-e29b-41d4-a716-446655440020',
           release_train_id: '550e8400-e29b-41d4-a716-446655440031',
           title: 'Resursbrist för mobilutveckling',
@@ -36,7 +36,7 @@ exports.seed = function(knex) {
           created_by: '550e8400-e29b-41d4-a716-446655440010'
         },
         {
-          id: '550e8400-e29b-41d4-a716-446655440062',
+          id: '550e8400-e29b-41d4-a716-446655440072',
           organization_id: '550e8400-e29b-41d4-a716-446655440020',
           release_train_id: '550e8400-e29b-41d4-a716-446655440032',
           title: 'GDPR-compliance för datahantering',
@@ -52,7 +52,7 @@ exports.seed = function(knex) {
           created_by: '550e8400-e29b-41d4-a716-446655440010'
         },
         {
-          id: '550e8400-e29b-41d4-a716-446655440063',
+          id: '550e8400-e29b-41d4-a716-446655440073',
           organization_id: '550e8400-e29b-41d4-a716-446655440020',
           release_train_id: '550e8400-e29b-41d4-a716-446655440033',
           title: 'Budgetöverskridning',

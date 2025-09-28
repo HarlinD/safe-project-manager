@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build: ./frontend
@@ -19,8 +17,12 @@ services:
       - "3016:3016"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://safe_user:safe_password@db:5447/safe_pm
-      - REDIS_URL=redis://redis:6380
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=safe_pm
+      - DB_USER=safe_user
+      - DB_PASSWORD=safe_password
+      - REDIS_URL=redis://redis:6379
       - JWT_SECRET=your-jwt-secret-here
       - FRONTEND_URL=http://localhost:3015
     depends_on:
